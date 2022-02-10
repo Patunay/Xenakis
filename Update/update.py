@@ -73,7 +73,6 @@ On Concepts Ipad app:
 ################################################################################
 """
 
-from logging import root
 from tkinter import *
 from tkinter import filedialog
 from tkmacosx import Button
