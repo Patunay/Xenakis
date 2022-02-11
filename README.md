@@ -10,7 +10,7 @@
  ## In this repository:
 
  - Archive:
-    - Stores the code for all deprecated versions of Xenakis since the first version.
+    - Stores the code for all obsolete versions of Xenakis since the first version.
  - Assets:
     - Stores files for debugging purposes
  - Main:
@@ -18,9 +18,8 @@
  - Update:
     - Stores the files that are being used in the update.
  
- ## Regarding version update documentation:
+ ## Regarding Documentation:
 
-Starting from version Alpha 1.4, version update documentation will be added in the DOCUMENTATION file.
+ A ".md" file with comprehensive documentation will be available with the beta 1.0 deployment.
 
-In the future, DOCUMENTATION file will contain everything.
 
