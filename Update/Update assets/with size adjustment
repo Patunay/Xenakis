@@ -1,0 +1,93 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from PIL import Image
+from tkinter import filedialog
+
+
+# Open and calculate #s of filepaths
+filepaths = filedialog.askopenfilename(multiple=True)
+print(filepaths,"\n")
+
+totalvoices = len(filepaths)
+
+# Convert to binary
+data = []
+lenghts = []
+rows = []
+for filepath in filepaths:
+        org_img = np.array(Image.open(filepath))    #opening image of voice  
+        blue = org_img[:,:,2]   #obtaining Blue values
+        thrs = 200
+        binarized = 1.0 * (blue > thrs) # make all pixels 1 < threshold black  
+        binarized = binarized.astype(int)
+        data.append(binarized)
+
+        lenghts.append(binarized.shape[1])  #Get sizes
+        rows.append(binarized.shape[0])
+
+
+# Get maximun values
+col_max = max(lenghts)
+row_max = max(rows)
+
+
+# Normalize lenghts to maximun values
+fixedcols = []
+sub_counter = 0
+for x in data:
+    inq_col = data[sub_counter].shape[1]
+    inq_row = data[sub_counter].shape[0]
+    if inq_col < col_max:
+        newcolumns = col_max - inq_col
+        added = np.ones((inq_row,newcolumns),dtype=int)
+        fixed = np.append(data[sub_counter],added,axis=1)
+        fixedcols.append(fixed)
+    else:
+        fixedcols.append(data[sub_counter])
+    sub_counter += 1
+
+# Normalize columns to maximun values:
+fixedrows = []
+sub_counter = 0
+for x in fixedcols:
+    inq_row = fixedcols[sub_counter].shape[0]
+    fixed_col = fixedcols[sub_counter].shape[1]
+    if inq_row < row_max:
+        newrows = row_max - inq_row
+        added = np.ones((newrows,fixed_col),dtype=int)
+        fixed = np.append(fixedcols[sub_counter],added,axis=0)
+        fixedrows.append(fixed)
+    else:
+        fixedrows.append(fixedcols[sub_counter])
+    sub_counter += 1
+
+# ##########
+
+# Invert binary values
+inverted_binary = []
+sub_counter = 0
+for x in fixedrows:
+    inv = fixedrows[sub_counter]^1
+    sub_counter += 1 
+    inverted_binary.append(inv)
+print(inverted_binary)
+
+
+# Sum all 
+summed = []
+sub_counter = 0
+
+for x in inverted_binary:
+    if sub_counter == 0:
+        summed = np.array(x)
+    else:
+        summed = summed + x
+    sub_counter += 1 
+
+summed = np.where(summed >= 1, 1, summed)
+summed = summed^1 
+
+plt.imsave('/Users/cmauro/Documents/Programs/Xenakis/Update/temp_file/temp_preview.png',summed,cmap="gray")   # save the array to .png 
+
+
+
