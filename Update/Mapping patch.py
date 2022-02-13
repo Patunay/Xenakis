@@ -315,7 +315,7 @@ class conv_window:
         for filepath in filepathlist:
                 org_img = np.array(Image.open(filepath))    #opening image of voice  
                 blue = org_img[:,:,2]   #obtaining Blue values
-                thrs = 200
+                thrs = int(self.threshold_entry.get())
                 binarized = 1.0 * (blue > thrs) # make all pixels 1 < threshold black  
                 binarized = binarized.astype(int)
                 data.append(binarized)
@@ -505,22 +505,22 @@ class conv_window:
 
     # PNG2Bach.Roll Algorithm
     def img_proc(self):
-        bachroll_final = "" #String where all voices will be stored
-        voiceadd_final = "" #String where all "insertvoice 1" will be stored
-        counter = 1 #For voice number representation
+        counter = 1 #For voice number representation in bach sintax
         x = 0
 
         #Update input data with the one currently displayed in path_list
         filepaths = self.path_list.get(0, END)
-
         voices = len(filepaths)
         voiceloop = np.arange(voices)
-
         multiplier = int(self.lenght_entry.get())
-
         velocity = self.velocity_entry.get()    #Stays in string format
-        
         threshold = int(self.threshold_entry.get())
+        raw_cumulative_out = np.array([[0,0,0,0]])
+
+        lenghts = []
+
+        ranges_for_clefs = [0]
+
 
         for total in voiceloop:
             filepath = filepaths[x]
@@ -574,71 +574,147 @@ class conv_window:
 
             out = np.concatenate((out,comp_array), axis=1)  #Sum everything
             out = out[np.lexsort(np.fliplr(out).T)]   #Ascending order///In Chronological Order
-            out = out.astype('float64')
-
-            # Calculate range of inquiry
-            inq = out[:,1]
-            inq_max = max(inq)
-            inq_min = min(inq)
-            inq_range = inq_max - inq_min
-
-            #Set output range 
-            final_max = 10800       # To be later editable by user input
-            final_min = 2100
-            final_range = final_max - final_min
-
-            out[:,1] = out[:,1] - inq_min 
-
-
-            step_ = (final_max-final_min)/(inq_range)
-
-            out[:,1] = out[:,1] * step_
-            out[:,1] = out[:,1] + 2100
-
-            out[:,1] = 12900 - out[:,1] # invert mapping (math saves day yet again)
-
-            out = np.rint(out)
-            out = out.astype('int64')
-
-
-            out[:,0] = out[:,0]*multiplier    #Handle Onsets and Durations
-            out[:,2] = out[:,2]*multiplier
-
             out = np.delete(out,[0,1], axis=0)  # Deletion of first guides (2 in total)
-            end_array = np.delete(end_array,[0,1], axis=0)
 
-            #########################Syntax creation    
-            i_syntax = i - 2 #Adjust new i to the deletion of the 2 guides
-            sintax = np.split(out, i_syntax)
+            flag = np.zeros((out.shape[0],1),dtype=int) # Create "HEY I START A NEW VOICE!!!" Flag
 
-            s = []
-            for q in end_array:
-                s.append("[")                                #[
-                s.append(sintax[subarray][0,0])              #[ onset
-                s.append("[")                                #[ onset [
-                s.append(sintax[subarray][0,1])              #[ onset [ pitch
-                s.append(" ")                                # space
-                s.append(sintax[subarray][0,2])              #[ onset [ pitch duration
-                s.append(" ")                                # space
-                s.append(velocity)                           #[ onset [ pitch duration velocity  
-                s.append("]]")                               #[ onset [ pitch duration velocity]]
-                subarray += 1                                #go to next sub-array
-            s.append("]")                                    #final "]"
-            subarray = 0                        #Resets subarray to 0
-            string = "".join(map(str, s))       #Join Everything
+            flag[0,0] = 1   # Set first item to 1 "starting point of voice"
+            flag[out.shape[0]-1,0] = -1   # Set last items to -1 to "]" in sintax
 
-            counter = str(counter)
-            pred = "addchords[" + counter
-            counter = int(counter)
-            counter += 1    #Counter goes up
+            out = np.append(out,flag,axis=1)
 
-            bachroll = pred + string    #finalized syntax out
+            raw_cumulative_out = np.append(raw_cumulative_out,out,axis=0)
 
-            voiceadd_final = voiceadd_final + "insert voice 1,"
-            bachroll_final = bachroll_final + bachroll
+            # Lenght of voice
+            lenght = len(raw_cumulative_out)
+            print(lenght)
+            lenghts.append(lenght)
+        print (lenghts)
+        lenghts = np.array(lenghts)
 
-        bachroll_final = voiceadd_final + bachroll_final
-        self.result = bachroll_final
+        slice_indexes = lenghts - 1
+        print(slice_indexes)
+        # slice_indexes[0] = slice_indexes[0] - 1 # Account for 0s intialialization
+        print(slice_indexes)
+        ###########
+
+
+        raw_cumulative_out = np.delete(raw_cumulative_out,[0],axis=0)  # Delete init zerosss
+
+        # Mapping to Musical Register
+
+        raw_cumulative_out = raw_cumulative_out.astype('float64')
+        # Calculate range of inquiry
+        inq = raw_cumulative_out[:,1]
+        inq_max = max(inq)
+        inq_min = min(inq)
+        inq_range = inq_max - inq_min
+
+        #Set output range 
+        final_max = 10800       # To be later editable by user input
+        final_min = 2100
+        final_range = final_max - final_min
+
+        raw_cumulative_out[:,1] = raw_cumulative_out[:,1] - inq_min 
+
+        step_ = (final_range)/(inq_range)
+
+        raw_cumulative_out[:,1] = raw_cumulative_out[:,1] * step_
+        raw_cumulative_out[:,1] = raw_cumulative_out[:,1] + 2100
+
+        raw_cumulative_out[:,1] = 12900 - raw_cumulative_out[:,1] # invert mapping (math saves day yet again)
+
+        raw_cumulative_out = np.rint(raw_cumulative_out)
+        raw_cumulative_out = raw_cumulative_out.astype('int64')
+
+
+        raw_cumulative_out[:,0] = raw_cumulative_out[:,0]*multiplier    #Handle Onsets and Durations
+        raw_cumulative_out[:,2] = raw_cumulative_out[:,2]*multiplier
+
+        print("raw_cumul_out  shape is", raw_cumulative_out.shape)
+        print(raw_cumulative_out)
+
+        # Calculate clefs
+
+        separated_voices = np.split(raw_cumulative_out,slice_indexes)   
+        print(separated_voices)
+
+        print(separated_voices[0])
+        print(separated_voices[1])
+        print(separated_voices[2])
+        print(separated_voices[3])
+
+        print()
+        print(np.average(separated_voices[0],axis=0))
+
+        print(separated_voices[0].shape) 
+        af = separated_voices[0].shape
+        af = af[1]
+
+        clefloop = np.arange(af)     
+
+        averages=[]
+        cnt = 0
+        for voices in clefloop:
+            b = separated_voices[cnt][:, 1]                         # data of the cols
+            print (b)
+            avr = np.average(b)                    # average
+            print(avr)
+            averages.append(avr)
+            cnt += 1
+            pass
+
+        print(averages) # Works
+        # Now approximate 
+        # Consider different ways of analizing data, study stadistics
+        # Consider smart ordering
+
+
+
+
+
+
+
+        # Convert to Bach.Roll Sintax
+
+        sintax = np.split(raw_cumulative_out,raw_cumulative_out.shape[0])
+        out_total_events = raw_cumulative_out.shape[0]
+        out_total_events = np.arange(out_total_events)
+
+
+        s = []
+        for q in out_total_events:
+
+            if sintax[subarray][0,3] == 1:
+                counter = str(counter)
+                s.append("addchords[" + counter)
+                counter = int(counter)
+                counter += 1
+
+            s.append("[")                                #[
+            s.append(sintax[subarray][0,0])              #[ onset
+            s.append("[")                                #[ onset [
+            s.append(sintax[subarray][0,1])              #[ onset [ pitch
+            s.append(" ")                                # space
+            s.append(sintax[subarray][0,2])              #[ onset [ pitch duration
+            s.append(" ")                                # space
+            s.append(velocity)                           #[ onset [ pitch duration velocity  
+            s.append("]]")                               #[ onset [ pitch duration velocity]]
+
+            if sintax[subarray][0,3] == -1:              # ]  "Final braket for voice"
+                s.append("]")
+            subarray += 1                                #go to next sub-array
+
+        counter = 0   #Resets counter
+        subarray = 0  #Resets subarray to 0
+        string = "".join(map(str, s))       #Join Everything
+
+        header = "insert voice 1,"*voices   # Creates nessesary headers
+
+
+        bachroll = header + string    #finalized syntax out
+
+        self.result = bachroll
         self.show_output()
         pass
     pass

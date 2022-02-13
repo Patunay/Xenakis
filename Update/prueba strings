@@ -1,0 +1,24 @@
+# voices = 3
+
+# print("ha "*voices)
+import numpy as np
+
+
+
+a = np.array([[0,3],
+     [0,3],
+     [0,3],
+     [0,3],
+     [0,3],
+     [0,3],
+     [0,3]])
+
+b =[2,6]
+
+
+
+c = np.split(a, b)
+
+print(c)
+
+print(len(a))
