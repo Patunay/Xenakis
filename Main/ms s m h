@@ -1,0 +1,18 @@
+ms s m h
+
+1s = 1000ms
+60s = 1min
+1min = 60 000 ms
+
+
+XmYsZms = Ums / 60 000
+
+
+1min = 60 000
+
+60 =  100%
+s =  x%
+
+
+60 = 1
+x = input
