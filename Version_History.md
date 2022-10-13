@@ -72,32 +72,39 @@ _Feb, 2022_
 - Experiment with harmony.
 - Create AI(??) to detect time information in score and expand lenght dynamically.
 
-_July, 2022_
+_October, 2022_
 
 ## Alpha 1.5 update:
 
 ### This update achieved:
 
 - Simplification of code:
-  - This version only contains the png to score generator to simplify code and to focus on its functions exhaustively.
+  - This version only contains the png to score generator module to simplify the development.
   - The other functionalities will be developed once the main one is ready.
-- Auto Scaling:
-  - Now the algorithm will scale all data to 2200 to {max_midi_note}.
-  - This scaling is sort of customizable.
+- User Defined Pitch Mapping:
+  - Now the algorithm will map pitches to a user defined range (in midicents).
 - LARGE files now supported
   - If output is LARGE, it will be splited into batches of a maximun of 9999 events per batch
   - This allows MAX 8 to read and load the data without crashing.
+- Preview Combined layers function fixed.
+  - It now shows a preview in a separate window.
+- Now each layer is stored independentely in a subarray.
+  - This was done to organize large amounts of data more efficiently.
+- Lenght Inquiry Function added.
+  - Now the user can check the lenght of the output file without having to run the algorithm by pressing the boton "How Long?".
+  - Outputs the duration in console.
+- Xenakis now stores stores the data array as a .csv file in the Output folder.
+  - Debugging purposes.
+  - A header is included that contains the following information:
+    - int(start_flag), int(total_voices), int(total_events), int(multiplier factor)
+- Xenakis now automatically organizes the voice order from high to low (pitch-wise).
+  - Xenakis calculates the average midicent value for every voice and reorders the data accordingly.
+- Fixed bugs in .BachScroll syntax creation.
+- Keyboard Binds added:
+  - [space] Preview layer.
+  - [a] Preview combined layers.
 
 ### In the future:
 
-- Comprehensive tests
-- Image preview on separate pop-up window
-  - For single layer:
-    - Default status = 0
-    - Trigger pop-up window function
-    - If status = 0 --> Generate pop-up window
-      - Set status to 1.
-    - Else (status =! 0):
-      - Update pop-up image.
-  - For combined layer:
-    - Same as single layer, but with different instance name.
+- Add scrolling bar single and combined layer preview.
+- Direct output as MIDI will be availble in the upcoming months.

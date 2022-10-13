@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import filedialog
 from tkmacosx import Button
-from PIL import Image, ImageTk, ImageGrab
+from PIL import Image, ImageTk
 import matplotlib.pyplot as plt
 import numpy as np
 import itertools
@@ -57,7 +57,6 @@ class conv_window:
         self.filepath_options_frame.grid(row=1, column=0,columnspan=5, sticky="nsew", padx=2, pady=2)
 
         # Frame weights (how much space does it need)
-
         # In root:
         self.root.rowconfigure(0, weight=3)
         self.root.columnconfigure(0, weight=3)
@@ -100,9 +99,8 @@ class conv_window:
         self.filepath_options_frame.columnconfigure(0, weight=0)
 
         # Widgets
-
         # Widgets on self.root
-        self.entry10_button = Button(self.root, text="Return to mode selection",bg="yellow",fg="black",relief=RAISED,command=self.mode_sel)
+        self.entry10_button = Button(self.root, text="Reset Program",bg="yellow",fg="black",relief=RAISED,command=self.mode_sel)
         self.entry10_button.grid(row=5,column=0,sticky="w")
         #
         self.carlos_label = Label(self.root, text="Program developed by Carlos Mauro G.",font="helvetica 10 italic") #,bg=GUI_colors.color())
@@ -111,11 +109,9 @@ class conv_window:
         # Wiggets on parent_frame
         self.entry9_button = Button(self.parent_frame, text="Start",bg="#1494B8",fg="white",relief=RAISED,command=self.img_proc)
         self.entry9_button.grid(row=2,column=1,columnspan=1)
-
+        #
         self.lenght_inquiry = Button(self.parent_frame, text="How long?",relief=RAISED,command=self.verify_lenght)
         self.lenght_inquiry.grid(row=2,column=0,columnspan=1)
-
-
         #
         self.title_label = Label(self.parent_frame, text=title,font="helvetica 18 bold",fg="#22292B") # ,bg=GUI_colors.color())
         self.title_label.grid(row=0,column=0,columnspan=8)
@@ -123,45 +119,39 @@ class conv_window:
         # Widgets on options_frame
         self.lenght_label = Label(self.options_frame, text="Lenght Multiplier:")
         self.lenght_label.grid(row=1,column=0,sticky="w")
-
+        #
         self.lenght_entry = Entry(self.options_frame, width=3, borderwidth=2)
         self.lenght_entry.grid(row=1,column=1)     
         #
         self.velocity_label = Label(self.options_frame, text="MIDI Velocity:")
         self.velocity_label.grid(row=2,column=0,sticky="w")
-
+        #
         self.velocity_entry = Entry(self.options_frame, width=3, borderwidth=2)
         self.velocity_entry.grid(row=2,column=1)      
         #
         self.threshold_label = Label(self.options_frame, text="Threshold:")
         self.threshold_label.grid(row=3,column=0,sticky="w")
-
+        #
         self.threshold_entry = Entry(self.options_frame, width=3, borderwidth=2)
         self.threshold_entry.grid(row=3,column=1)
         #          
-
         self.min_pitch_label = Label(self.options_frame,text="Min. Pitch:")
         self.min_pitch_label.grid(row=4,column=0,sticky="w")
-
+        #
         self.min_pitch_entry = Entry(self.options_frame, width=5, borderwidth=2)
         self.min_pitch_entry.grid(row=4,column=1)
-
         #
-
         self.max_pitch_label = Label(self.options_frame,text="Max. Pitch:")
         self.max_pitch_label.grid(row=5,column=0,sticky="w")
-
+        #
         self.max_pitch_entry = Entry(self.options_frame, width=5, borderwidth=2)
         self.max_pitch_entry.grid(row=5,column=1)
-
         #
-
         self.filepath_label = Label(self.filepath_set_frame, text="Filepaths:")
         self.filepath_label.grid(row=0,column=0,sticky="w")
-
+        #
         self.entry5_button = Button(self.filepath_set_frame,text="Open",bg="#1494B8",fg="white",relief=RAISED,command= self.conv_set_params)
         self.entry5_button.grid(row=0,column=1,sticky="e")
-        #
 
         # Widgets on filepath_list_frame
         self.path_list = Listbox(self.filepath_list_frame, selectmode=SINGLE)  
@@ -182,7 +172,6 @@ class conv_window:
         #
         self.entry8_button = Button(self.filepath_options_frame, text="Preview Combined",bg="#016F8D",fg="purple",relief=RAISED,command=self.preview_combined)
         self.entry8_button.grid(row=1,column=4)
-        #
 
         # Preset Loader  - Eventually add multiple presets depending on file input or user preference
         preset = 1
@@ -197,8 +186,6 @@ class conv_window:
         self.path_list.bind("<space>", self.preview_voice)
         self.path_list.bind("a", self.preview_combined)
 
-        # Load formating config
-
         self.root.mainloop()
         pass
 
@@ -207,9 +194,7 @@ class conv_window:
     ######################
 
     def verify_lenght(self):
-
-        # add estimated time here based on last event an multiplier
-        #Update input data with the one currently displayed in path_list
+        # Read Current Program state
         multiplier = int(self.lenght_entry.get())
         filepaths = self.path_list.get(0, END)
         voices = len(filepaths)
@@ -223,7 +208,7 @@ class conv_window:
             filepath = str(filepath)
             x += 1
 
-            for r in (("[", ""), ("]", ""),("'", "")):  #File Path Formating>>>Eliminating multiple characters from string
+            for r in (("[", ""), ("]", ""),("'", "")):  # File Path Formating>>>Eliminating multiple characters from string
                 filepath = filepath.replace(*r)
             filepathlist.append(filepath)
         x = 0   # Resets counter just in case
@@ -242,7 +227,6 @@ class conv_window:
 
                 lenghts.append(binarized.shape[1])  #Get sizes
                 rows.append(binarized.shape[0])
-
 
         # Get maximun values
         col_max = max(lenghts)
@@ -293,11 +277,6 @@ class conv_window:
         pass
 
     def preview_combined(self,event=None):
-
-        # add estimated time here based on last event an multiplier
-        # 
-        #   
-        #Update input data with the one currently displayed in path_list
         filepaths = self.path_list.get(0, END)
         voices = len(filepaths)
         totalvoices = np.arange(voices)
@@ -330,11 +309,9 @@ class conv_window:
                 lenghts.append(binarized.shape[1])  #Get sizes
                 rows.append(binarized.shape[0])
 
-
         # Get maximun values
         col_max = max(lenghts)
         row_max = max(rows)
-
 
         # Normalize lenghts to maximun values
         fixedcols = []
@@ -406,24 +383,24 @@ class conv_window:
 
     # Filepath Managment
     def path_move_up(self):
-        index = self.path_list.curselection() #Gets index of current selection
-        index = index[0]  #   Converts tuple to int
-        text = self.path_list.get(index)   #Gets filepath string
-        if index == 0:  #If item is on index 0
+        index = self.path_list.curselection() # Gets index of current selection
+        index = index[0]  # Converts tuple to int
+        text = self.path_list.get(index)   # Gets filepath string
+        if index == 0:  # If item is on index 0
             self.path_list.delete(index)
             self.path_list.insert("end", text)
             self.path_list.select_set("end")
             return
-        self.path_list.delete(index)    #If item is not on index 0
+        self.path_list.delete(index)    # If item is not on index 0
         newindex = index - 1
         self.path_list.insert(newindex, text)
         self.path_list.select_set(newindex)
         pass
     def path_move_down(self):
-        index = self.path_list.curselection() #Gets index of current selection
-        index = index[0]  #   Converts tuple to int   
-        text = self.path_list.get(index)   #Gets filepath string
-        if index == len(self.path_list.get(0, END))-1:  #If index = max voices
+        index = self.path_list.curselection() # Gets index of current selection
+        index = index[0]  # Converts tuple to int   
+        text = self.path_list.get(index)   # Gets filepath string
+        if index == len(self.path_list.get(0, END))-1:  # If index = max voices
             self.path_list.delete(index)
             self.path_list.insert(0, text)
             self.path_list.select_set(0)
@@ -434,7 +411,7 @@ class conv_window:
         self.path_list.select_set(newindex)
         pass
 
-    def add_path(self): #Supports multiple paths at once
+    def add_path(self): # Supports multiple paths at once
         new_paths = filedialog.askopenfilename(multiple=True)
         total_added = len(new_paths)
         new_paths = np.array_split(new_paths, total_added)
@@ -473,10 +450,8 @@ class conv_window:
         os.makedirs(new_dir_path)
         return new_dir_path
 
-
-    # PNG2Bach.Roll Algorithm
+    # Main Algorithm
     def img_proc(self):
-
         # Update input data with the one currently displayed in path_list
         filepaths = self.path_list.get(0, END)
         voices = len(filepaths)
@@ -499,28 +474,26 @@ class conv_window:
             event_container = np.split(event_container,total_voices)
             return event_container
 
-
         def primary_proc():
             x = 0   # Counter for filepath formating
             subarray = 0   # Subarray number, ++ every time until i ("end")
 
-            #Calculate lenght based on binary image
+            # Calculate lenght based on binary image
             def calculate_lenghts_from_binary(binarized_image_array):
                 res = []
                 for rowIdx, row in enumerate(binarized_image_array):
-                    colIdx = 0                       #start column index
+                    colIdx = 0                       # start column index
                     for k, grp in itertools.groupby(row):
-                        vals = list(grp)                   #Values in the group
-                        lgth = len(vals)                  #Lenght of the group
-                        colIdx2 = colIdx + lgth - 1       #end of column index
+                        vals = list(grp)                   # Values in the group
+                        lgth = len(vals)                  # Lenght of the group
+                        colIdx2 = colIdx + lgth - 1       # end of column index
 
-                        if k == 0 and lgth >= 2:           #Record this group if under threshhold
+                        if k == 0 and lgth >= 2:           # Record this group if under threshhold
                             res.append([rowIdx,colIdx])
                             res.append([rowIdx, colIdx2])
-                        colIdx = colIdx2 + 1              #Advance column index
+                        colIdx = colIdx2 + 1              # Advance column index
                 raw_list = np.array(res)
                 return raw_list
-
 
             macro_container = init_voices(voices)
 
@@ -578,8 +551,8 @@ class conv_window:
             return macro_container
 
 
-        mapped_pitches_container = init_voices(voices)
-        raw_cumul_out = primary_proc()
+        mapped_pitches_container = init_voices(voices)  # Init container array
+        raw_cumul_out = primary_proc()  # Get event data
 
         def mapping_function(raw_cumul_out):
             x = 0
@@ -615,9 +588,9 @@ class conv_window:
                 step_ = (final_range)/(inq_range)
 
                 voice[:,1] = voice[:,1] * step_
-                voice[:,1] = voice[:,1] + 2100
+                voice[:,1] = voice[:,1] + final_min
 
-                voice[:,1] = 12900 - voice[:,1] # invert mapping (math saves day yet again)
+                voice[:,1] = (final_min + final_max) - voice[:,1] # invert mapping (math saves day yet again)
 
                 voice = np.rint(voice)    # Aproximate
                 voice = voice.astype('int64')
@@ -631,8 +604,7 @@ class conv_window:
 
             return mapped_pitches_container
 
-        mapped_data = mapping_function(raw_cumul_out)
-
+        mapped_data = mapping_function(raw_cumul_out)   # Map pitches to desired range
 
         def calc_order_voices(data):
             cnt = 0 # For indexing subarrays in mapped data
@@ -662,8 +634,8 @@ class conv_window:
             final_array = np.delete(final_array,[0],axis=0)  # Delete init zerosss
             return final_array
 
-        final_array = calc_order_voices(mapped_data)
-        final_array[-1,3] = -2 # "END OF FILE" flag
+        final_array = calc_order_voices(mapped_data)    # Organize by pitch (high - low)
+        final_array[-1,3] = -2 # append "END OF FILE" flag
 
         # Create .csv and organize output folder
         dir_name = self.Create_Dir_Name()
@@ -676,15 +648,12 @@ class conv_window:
 
         csv_header = csv_header_creator(voices,final_array.shape[0],multiplier)
         print(csv_header)
-
         final_csv = np.append(csv_header,final_array,axis=0)
-
         np.savetxt(f"{directory_path}/{dir_name}.csv", final_csv, delimiter=",")
 
         # Convert to Bach.Roll Sintax
         counter = 0 # For voice number representation in bach sintax
 
-        # Final event counter 
         sintax = np.split(final_array,final_array.shape[0]) # Divide into idividual events
 
         out_total_events = final_array.shape[0]
@@ -697,21 +666,20 @@ class conv_window:
         s = []  # Syntax container
         add_chord_flag = FALSE
 
-
+        # Start of .BachScroll syntax creator
         for event in sintax:    # por cada evento en el global container de eventos
             if event_cntr == max_events_per_batch:  # Force break to create batch
                 print(macro_conter)
                 print(event_cntr)
                 if macro_conter != 0:   # if not first batch
                     if add_chord_flag == FALSE:
-                        print("la cagaste, algo no funciona")
+                        print("something is not working as expected :(")
                         macro_conter += 1
                         s.append("]")
                         temp_syntx = "".join(map(str, s))       # Join Everything
                         temp_syntx = f"addchords[{str(counter)}" + temp_syntx
                         macro_sxyntax.append(temp_syntx)
                         add_chord_flag = TRUE
-
                         pass
                     else:
                         macro_conter += 1
@@ -721,7 +689,7 @@ class conv_window:
                         pass
                     s = []  # Reset string holder
                     event_cntr = 0  # Reset counter
-                elif macro_conter == 0:   # if first batch
+                elif macro_conter == 0:   # If first batch
                     macro_conter += 1
                     s.append("]")
                     temp_syntx = "".join(map(str, s))       # Join Everything
@@ -729,10 +697,6 @@ class conv_window:
                     s = []  # Reset string holder
                     s.append(f"")
                     event_cntr = 0  # Reset counter
-                    # print("funciona hasta aca")
-
-            # en caso de ser 1 sola voz, no reconoce el input de add chord si exede el maximo permitido
-
 
             if event[0,3] == 1:  # Start of voice
                 counter += 1
@@ -740,16 +704,15 @@ class conv_window:
                 event_cntr += 1
                 add_chord_flag = TRUE
 
-            s.append("[")                                #[
-            s.append(event[0,0])              #[ onset
-            s.append("[")                                #[ onset [
-            s.append(event[0,1])              #[ onset [ pitch
-            s.append(" ")                                # space
-            s.append(event[0,2])              #[ onset [ pitch duration
-            s.append(" ")                                # space
-            s.append(velocity)                           #[ onset [ pitch duration velocity  
-            s.append("]]")                               #[ onset [ pitch duration velocity]]
-
+            s.append("[")                     # [
+            s.append(event[0,0])              # [ onset
+            s.append("[")                     # [ onset [
+            s.append(event[0,1])              # [ onset [ pitch
+            s.append(" ")                     #  space
+            s.append(event[0,2])              # [ onset [ pitch duration
+            s.append(" ")                     #  space
+            s.append(velocity)                # [ onset [ pitch duration velocity  
+            s.append("]]")                    # [ onset [ pitch duration velocity]]
 
             if event[0,3] == -1:              # ]  "Final braket for voice"
                 s.append("]")
@@ -760,7 +723,6 @@ class conv_window:
                 macro_sxyntax.append(temp_syntx)
             event_cntr += 1
 
-
         # Create out folder
         file_path_prefix = f"{directory_path}/batch_"
         file_out_cntr = 1
@@ -769,8 +731,8 @@ class conv_window:
             with open(fname,"w+") as f:
                 f.write(i)
             file_out_cntr += 1
+        # End of Main Function
         pass
-
 
 # Invocation of Classes
 def starting_point():
