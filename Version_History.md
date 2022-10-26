@@ -2,6 +2,44 @@
 
 ## _A graphic music notation handler_
 
+
+_October, 2022_
+
+## Alpha 1.5 update:
+
+### This update achieved:
+
+- Simplification of code:
+  - This version only contains the png to score generator module to simplify the development.
+  - The other functionalities will be developed once the main one is ready.
+- User Defined Pitch Mapping:
+  - Now the algorithm will map pitches to a user defined range (in midicents).
+- LARGE files now supported
+  - If output is LARGE, it will be splited into batches of a maximun of 9999 events per batch
+  - This allows MAX 8 to read and load the data without crashing.
+- Preview Combined layers function fixed.
+  - It now shows a preview in a separate window.
+- Now each layer is stored independentely in a subarray.
+  - This was done to organize large amounts of data more efficiently.
+- Lenght Inquiry Function added.
+  - Now the user can check the lenght of the output file without having to run the algorithm by pressing the boton "How Long?".
+  - Outputs the duration in console.
+- Xenakis now stores stores the data array as a .csv file in the Output folder.
+  - Debugging purposes.
+  - A header is included that contains the following information:
+    - int(start_flag), int(total_voices), int(total_events), int(multiplier factor)
+- Xenakis now automatically organizes the voice order from high to low (pitch-wise).
+  - Xenakis calculates the average midicent value for every voice and reorders the data accordingly.
+- Fixed bugs in .BachScroll syntax creation.
+- Keyboard Binds added:
+  - [space] Preview layer.
+  - [a] Preview combined layers.
+
+### In the future:
+
+- Add scrolling bar single and combined layer preview.
+- Direct output as MIDI will be availble in the upcoming months.
+
 _Feb, 2022_
 
 ## Alpha 1.4 update:
@@ -55,39 +93,3 @@ _Feb, 2022_
 - Overhaul colors on GUI.
 - Realtime connection between graphical editor and Max Msp Software.
 
-_October, 2022_
-
-## Alpha 1.5 update:
-
-### This update achieved:
-
-- Simplification of code:
-  - This version only contains the png to score generator module to simplify the development.
-  - The other functionalities will be developed once the main one is ready.
-- User Defined Pitch Mapping:
-  - Now the algorithm will map pitches to a user defined range (in midicents).
-- LARGE files now supported
-  - If output is LARGE, it will be splited into batches of a maximun of 9999 events per batch
-  - This allows MAX 8 to read and load the data without crashing.
-- Preview Combined layers function fixed.
-  - It now shows a preview in a separate window.
-- Now each layer is stored independentely in a subarray.
-  - This was done to organize large amounts of data more efficiently.
-- Lenght Inquiry Function added.
-  - Now the user can check the lenght of the output file without having to run the algorithm by pressing the boton "How Long?".
-  - Outputs the duration in console.
-- Xenakis now stores stores the data array as a .csv file in the Output folder.
-  - Debugging purposes.
-  - A header is included that contains the following information:
-    - int(start_flag), int(total_voices), int(total_events), int(multiplier factor)
-- Xenakis now automatically organizes the voice order from high to low (pitch-wise).
-  - Xenakis calculates the average midicent value for every voice and reorders the data accordingly.
-- Fixed bugs in .BachScroll syntax creation.
-- Keyboard Binds added:
-  - [space] Preview layer.
-  - [a] Preview combined layers.
-
-### In the future:
-
-- Add scrolling bar single and combined layer preview.
-- Direct output as MIDI will be availble in the upcoming months.
