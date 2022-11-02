@@ -1,5 +1,13 @@
 # Xenakis <font size="3" >_by Carlos Mauro_ </font>
 
+**Copyright © CMG Solutions - All Rights Reserved**
+ 
+Unauthorized copying of files in this repository, via any medium is **strictly prohibited**
+  
+**Proprietary and confidential**
+  
+*Written by Carlos Camilo Mauro Galvez [cmg.solutions.a@gmail.com], 11/02/2022* 
+
 ## Introduction:
 
 Xenakis is a software that aims to provide music composers with an alternate way of notating music. This is done by merging the qualities of graphical and traditional notation.
